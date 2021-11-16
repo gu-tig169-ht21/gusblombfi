@@ -7,39 +7,20 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'ToDo TIG169',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'TIG169 TODO'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -48,68 +29,185 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
+  /* void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        centerTitle: true,
+        title: Center(
+          child: Text(
+            widget.title,
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w400),
+          ),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.more_vert_sharp, size: 35))
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      body: _body(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return const MySecondView();
+          }));
+        },
+        tooltip: 'Increment',
+        backgroundColor: Colors.grey[400],
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 55,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  _body() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        children: [
+          _item('Write a book'),
+          _divider(),
+          _item('Do Homework'),
+          _divider(),
+          _doneItem('Tidy room'),
+          _divider(),
+          _item('Watch TV'),
+          _divider(),
+          _item('Nap'),
+          _divider(),
+          _item('Shop groceries'),
+          _divider(),
+          _item('Have fun'),
+          _divider(),
+          _item('Meditate'),
+          _divider(),
+        ],
+      ),
+    );
+  }
+
+  Widget _item(String name) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.crop_square_sharp),
+        ),
+        Expanded(
+          child: Text(
+            name,
+            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.clear),
+        ),
+      ],
+    );
+  }
+
+  Widget _doneItem(String name) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.check_box_outlined),
+        ),
+        Expanded(
+          child: Text(
+            name,
+            style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w400,
+              decoration: TextDecoration.lineThrough,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.clear),
+        ),
+      ],
+    );
+  }
+
+  _divider() {
+    return const Divider(
+      height: 15,
+      thickness: 1,
+    );
+  }
+}
+
+//**********  2:A SIDAN  **********
+
+class MySecondView extends StatelessWidget {
+  const MySecondView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Second View',
+      theme: ThemeData(
+        primarySwatch: Colors.grey,
+      ),
+      home: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.keyboard_arrow_left, size: 35),
+            ),
+            title: Center(
+              child: Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.only(right: 40),
+                  child: const Text(
+                    'TIG169 TODO',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400),
+                  )),
+            ),
+          ),
+          body: _writeToDo()),
+    );
+  }
+
+  _writeToDo() {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.all(35),
+          child: const TextField(
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2.0),
+              ),
+              hintText: 'What are you going to do?',
+            ),
+          ),
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+          Icon(Icons.add),
+          Text('ADD',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ]),
+      ],
     );
   }
 }
