@@ -1,4 +1,7 @@
+// ignore_for_file: unused_element
+
 import 'package:flutter/material.dart';
+import 'addView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ToDo TIG169',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.teal,
       ),
       home: const MyHomePage(title: 'TIG169 TODO'),
     );
@@ -29,21 +32,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  /* void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  } */
+  bool isChecked = false;
+  bool pressed = false;
+
+  /*  Map<String, bool?> tasks = {
+    'Write a book': false,
+    'Clean': false,
+    'Do dishes': false,
+    'Sweep floor': false,
+    'Climb Mount Everest': true,
+  }; */
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: Colors.teal[900],
         title: Center(
           child: Text(
             widget.title,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w400),
+            style: const TextStyle(
+                fontSize: 28, fontWeight: FontWeight.w300, color: Colors.white),
           ),
         ),
         actions: [
@@ -56,11 +66,11 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const MySecondView();
+            return const AddView();
           }));
         },
         tooltip: 'Increment',
-        backgroundColor: Colors.grey[400],
+        backgroundColor: Colors.teal[900],
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -79,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _divider(),
           _item('Do Homework'),
           _divider(),
-          _doneItem('Tidy room'),
+          _item('Tidy room'),
           _divider(),
           _item('Watch TV'),
           _divider(),
@@ -96,46 +106,85 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+/*   _checkItem2() {
+    final List<CheckboxItem> checkboxList = [
+      CheckboxItem('Test', false),
+      CheckboxItem('Test', false)
+    ];
+    return ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          return CheckboxListTile(
+              title: Text(checkboxList[index].text),
+              value: checkboxList[index].flag,
+              onChanged: (bool? value) {
+                setState(() {});
+              });
+        });
+  } */
+/* 
+  _checkItem() {
+    return Expanded(
+      child: Column(
+        children: tasks.keys.map(
+          (taskItem) {
+            return CheckboxListTile(
+              title: Text(
+                taskItem,
+                style: taskItem. == true 
+                ? const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w300,
+                  
+                )
+                :
+              ),
+              value: tasks[taskItem],
+              secondary: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  setState(() {
+                    print(taskItem);
+/*  tasks.removeWhere((key, value) => value == tasks[taskItem]);*/
+                  });
+                },
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+              onChanged: (bool? value) {
+                setState(() {
+                  tasks[taskItem] = value;
+                });
+              },
+            );
+          },
+        ).toList(),
+      ),
+    );
+  } */
+
   Widget _item(String name) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.crop_square_sharp),
+        Checkbox(
+          value: isChecked,
+          onChanged: (bool? value) {
+            setState(() {
+              isChecked = value!;
+              pressed = !pressed;
+            });
+          },
         ),
         Expanded(
           child: Text(
             name,
-            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400),
-            textAlign: TextAlign.left,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.clear),
-        ),
-      ],
-    );
-  }
-
-  Widget _doneItem(String name) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.check_box_outlined),
-        ),
-        Expanded(
-          child: Text(
-            name,
-            style: const TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w400,
-              decoration: TextDecoration.lineThrough,
-            ),
-            textAlign: TextAlign.left,
+            style: pressed
+                ? const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w400,
+                    decoration: TextDecoration.lineThrough,
+                  )
+                : const TextStyle(fontSize: 26, fontWeight: FontWeight.w400),
           ),
         ),
         IconButton(
@@ -154,60 +203,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-//**********  2:A SIDAN  **********
+/* class CheckboxItem {
+  final String text;
+  final bool flag;
 
-class MySecondView extends StatelessWidget {
-  const MySecondView({Key? key}) : super(key: key);
+  CheckboxItem(this.text, this.flag);
+} */
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Second View',
-      theme: ThemeData(
-        primarySwatch: Colors.grey,
-      ),
-      home: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(Icons.keyboard_arrow_left, size: 35),
-            ),
-            title: Center(
-              child: Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.only(right: 40),
-                  child: const Text(
-                    'TIG169 TODO',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400),
-                  )),
-            ),
-          ),
-          body: _writeToDo()),
-    );
-  }
 
-  _writeToDo() {
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.all(35),
-          child: const TextField(
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 2.0),
-              ),
-              hintText: 'What are you going to do?',
-            ),
-          ),
-        ),
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
-          Icon(Icons.add),
-          Text('ADD',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        ]),
-      ],
-    );
-  }
-}
