@@ -5,7 +5,13 @@ import 'package:provider/provider.dart';
 import 'addView.dart';
 
 class MyState extends ChangeNotifier {
-  final List<CheckBoxState> _list = [];
+  final List<CheckBoxState> _list = [
+    CheckBoxState(title: 'Read a book'),
+    CheckBoxState(title: 'Do homework'),
+    CheckBoxState(title: 'Tidy room'),
+    CheckBoxState(title: 'Have fun'),
+    CheckBoxState(title: 'Meditate'),
+  ];
 
   List<CheckBoxState> get list => _list;
 
@@ -13,6 +19,10 @@ class MyState extends ChangeNotifier {
     _list.remove(checkbox);
     notifyListeners();
   }
+
+  /* void addToDo(CheckBoxState checkbox) {
+    _list.add(checkbox);
+  } */
 }
 
 class CheckBoxState {
@@ -59,14 +69,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final list = [
-    CheckBoxState(title: 'Read a book'),
-    CheckBoxState(title: 'Do homework'),
-    CheckBoxState(title: 'Tidy room'),
-    CheckBoxState(title: 'Have fun'),
-    CheckBoxState(title: 'Meditate'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Consumer<MyState>(builder: (context, state, child) {
         return ListView(children: <Widget>[
-          ...list.map(_buildCheckbox).toList(),
+          ...state.list.map(_buildCheckbox).toList(),
         ]);
       }),
       floatingActionButton: FloatingActionButton(
@@ -119,8 +121,8 @@ class _MyHomePageState extends State<MyHomePage> {
         secondary: IconButton(
             icon: const Icon(Icons.clear),
             onPressed: () {
-              Provider.of<MyState>(context, listen: false).removeBox(checkbox);
-              /* state.removeBox(checkbox); */ //ta bort kort
+              var state = Provider.of<MyState>(context, listen: false);
+              state.removeBox(checkbox); //ta bort kort
             }),
         onChanged: (value) => setState(
           () => checkbox.value = value!,
