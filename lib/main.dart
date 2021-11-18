@@ -3,37 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'addView.dart';
-
-class MyState extends ChangeNotifier {
-  final List<CheckBoxState> _list = [
-    CheckBoxState(title: 'Read a book'),
-    CheckBoxState(title: 'Do homework'),
-    CheckBoxState(title: 'Tidy room'),
-    CheckBoxState(title: 'Have fun'),
-    CheckBoxState(title: 'Meditate'),
-  ];
-
-  List<CheckBoxState> get list => _list;
-
-  void removeBox(CheckBoxState checkbox) {
-    _list.remove(checkbox);
-    notifyListeners();
-  }
-
-  /* void addToDo(CheckBoxState checkbox) {
-    _list.add(checkbox);
-  } */
-}
-
-class CheckBoxState {
-  final String title;
-  bool value;
-
-  CheckBoxState({
-    required this.title,
-    this.value = false,
-  });
-}
+import 'model.dart';
 
 void main() {
   runApp(
@@ -94,11 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ]);
       }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const AddView();
-          }));
-        },
         tooltip: 'Increment',
         backgroundColor: Colors.teal[900],
         child: const Icon(
@@ -106,6 +71,17 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Colors.white,
           size: 55,
         ),
+        onPressed: () async {
+          var newToDo = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddView(CheckBoxState(
+                        title: '',
+                      ))));
+          if (newToDo != null) {
+            Provider.of<MyState>(context, listen: false).addTodo(newToDo);
+          }
+        },
       ),
     );
   }
@@ -121,8 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         secondary: IconButton(
             icon: const Icon(Icons.clear),
             onPressed: () {
-              var state = Provider.of<MyState>(context, listen: false);
-              state.removeBox(checkbox); //ta bort kort
+              Provider.of<MyState>(context, listen: false).removeBox(checkbox);
             }),
         onChanged: (value) => setState(
           () => checkbox.value = value!,
