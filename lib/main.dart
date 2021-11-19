@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'addView.dart';
 import 'model.dart';
+import 'buildList.dart';
 
 void main() {
   runApp(
@@ -53,18 +54,22 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         actions: [
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.more_vert_sharp, size: 35))
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem(child: Text('All'), value: 'All'),
+              const PopupMenuItem(child: Text('Done'), value: 'Done'),
+              const PopupMenuItem(child: Text('Undone'), value: 'Undone')
+            ],
+            onSelected: (String value) {
+              Provider.of<MyState>(context, listen: false).filter(value);
+            },
+          )
         ],
       ),
-      body: Consumer<MyState>(builder: (context, state, child) {
-        return ListView(children: <Widget>[
-          ...state.list.map(_buildCheckbox).toList(),
-        ]);
-      }),
+      body: Consumer<MyState>(
+          builder: (context, state, child) =>
+              BuildList(filterList: _filterList(state.list, state.filterBy))),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Increment',
         backgroundColor: Colors.teal[900],
         child: const Icon(
           Icons.add,
@@ -86,28 +91,31 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildCheckbox(CheckBoxState checkbox) => CheckboxListTile(
-        contentPadding: const EdgeInsets.all(12.0),
-        controlAffinity: ListTileControlAffinity.leading,
-        value: checkbox.value,
-        title: Text(checkbox.title,
-            style: TextStyle(
-                decoration:
-                    checkbox.value ? TextDecoration.lineThrough : null)),
-        secondary: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              Provider.of<MyState>(context, listen: false).removeBox(checkbox);
-            }),
-        onChanged: (value) => setState(
-          () => checkbox.value = value!,
-        ),
-      );
+  List<CheckBoxState> _filterList(List<CheckBoxState> list, String filterBy) {
+    List<CheckBoxState> filteredList = [];
+    filteredList.clear();
 
-  _divider() {
-    return const Divider(
-      height: 15,
-      thickness: 1,
-    );
+    if (filterBy == "Done") {
+      list.forEach((CheckBoxState element) {
+        if (element.value == true) {
+          filteredList.add(element);
+        }
+      });
+      return filteredList;
+      // return list.where((checkbox) => checkbox.value == true).toList();
+    }
+
+    if (filterBy == "Undone") {
+      for (var element in list) {
+        if (element.value == false) {
+          filteredList.add(element);
+        }
+      }
+      return filteredList;
+      //return list.where((checkbox) => checkbox.value == false).toList();
+    }
+
+    ///If [filterBy] is not 'done' or 'undone' return the entire list unfiltered.
+    return list;
   }
 }

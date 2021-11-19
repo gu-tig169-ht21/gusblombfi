@@ -13,6 +13,9 @@ class MyState extends ChangeNotifier {
 
   List<CheckBoxState> get list => _list;
 
+  String _filterBy = 'All';
+  String get filterBy => _filterBy;
+
   void removeBox(CheckBoxState checkbox) {
     _list.remove(checkbox);
     notifyListeners();
@@ -20,6 +23,11 @@ class MyState extends ChangeNotifier {
 
   void addTodo(CheckBoxState checkbox) {
     _list.add(checkbox);
+    notifyListeners();
+  }
+
+  void filter(String filterBy) {
+    this._filterBy = filterBy;
     notifyListeners();
   }
 }
