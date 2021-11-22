@@ -5,6 +5,11 @@ import 'package:provider/provider.dart';
 import 'addView.dart';
 import 'model.dart';
 import 'buildList.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+// API-Key: 503e94e7-1781-463d-bd6a-38522d2a3b55
+// API-LÄNK: https://todoapp-api-pyq5q.ondigitalocean.app/todos?key=503e94e7-1781-463d-bd6a-38522d2a3b55
 
 void main() {
   runApp(
@@ -42,6 +47,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    ///Size of the entire screen.
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -66,9 +73,19 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Consumer<MyState>(
+      body: Container(
+        width: size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _content(),
+          ],
+        ),
+      ),
+      /* Consumer<MyState>(
           builder: (context, state, child) =>
-              BuildList(filterList: _filterList(state.list, state.filterBy))),
+              BuildList(filterList: _filterList(state.list, state.filterBy))), */
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.teal[900],
         child: const Icon(
@@ -117,5 +134,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ///If [filterBy] is not 'done' or 'undone' return the entire list unfiltered.
     return list;
+  }
+
+  Widget _content() {
+    return ElevatedButton(
+        child: Text('Hej'),
+        onPressed: () {
+          _findToDo();
+        });
+  }
+
+  void _findToDo() async {
+    var result = await _fetchToDo();
+    print(result);
+  }
+
+  Future<String> _fetchToDo() async {
+    http.Response response = await http.get(Uri.parse(
+        'https://todoapp-api-pyq5q.ondigitalocean.app/todos?key=503e94e7-1781-463d-bd6a-38522d2a3b55'));
+    var jsonData = response.body;
+    var obj = jsonDecode(jsonData);
+    for (int i = 0; i < obj.length; i++) {
+      var fetchedToDo = obj[i]['title'];
+      return fetchedToDo;
+    }
+    return obj[0]['title'];
   }
 }
