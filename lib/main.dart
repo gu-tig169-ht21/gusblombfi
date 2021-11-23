@@ -1,12 +1,12 @@
 // ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
+import 'package:my_first_app/api.dart';
+import 'package:my_first_app/todo_model.dart';
 import 'package:provider/provider.dart';
-import 'addView.dart';
-import 'model.dart';
+import 'add_view.dart';
 import 'buildList.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'model.dart';
 
 // API-Key: 503e94e7-1781-463d-bd6a-38522d2a3b55
 // API-LÄNK: https://todoapp-api-pyq5q.ondigitalocean.app/todos?key=503e94e7-1781-463d-bd6a-38522d2a3b55
@@ -30,15 +30,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: const MyHomePage(title: 'TIG169 TODO'),
+      home: const MyHomePage(title: 'TIG169 TODO', todoList: []),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, required this.todoList})
+      : super(key: key);
 
   final String title;
+  final List<Todo> todoList;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -73,19 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Container(
+      body: SizedBox(
         width: size.width,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _content(),
           ],
         ),
       ),
-      /* Consumer<MyState>(
-          builder: (context, state, child) =>
-              BuildList(filterList: _filterList(state.list, state.filterBy))), */
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.teal[900],
         child: const Icon(
@@ -94,26 +93,22 @@ class _MyHomePageState extends State<MyHomePage> {
           size: 55,
         ),
         onPressed: () async {
-          var newToDo = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddView(CheckBoxState(
-                        title: '',
-                      ))));
-          if (newToDo != null) {
-            Provider.of<MyState>(context, listen: false).addTodo(newToDo);
+          String? todoTitle = await Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddView()));
+          if (todoTitle != null) {
+            Provider.of<MyState>(context, listen: false).addTodo(todoTitle);
           }
         },
       ),
     );
   }
 
-  List<CheckBoxState> _filterList(List<CheckBoxState> list, String filterBy) {
-    List<CheckBoxState> filteredList = [];
+  List<TodoState> _filterList(List<TodoState> list, String filterBy) {
+    List<TodoState> filteredList = [];
     filteredList.clear();
 
     if (filterBy == "Done") {
-      list.forEach((CheckBoxState element) {
+      list.forEach((TodoState element) {
         if (element.value == true) {
           filteredList.add(element);
         }
@@ -137,27 +132,49 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _content() {
-    return ElevatedButton(
-        child: Text('Hej'),
-        onPressed: () {
-          _findToDo();
-        });
+    return Consumer<MyState>(builder: (context, state, child) {
+      if (state.list.isEmpty) {
+        return _futureBuilder();
+      } else {
+        return _listView(todolist: state.list);
+      }
+    });
+/*     _futureBuilder(); */
   }
 
-  void _findToDo() async {
-    var result = await _fetchToDo();
-    print(result);
+  _findToDo() async {
+    List<Todo> todoList = await Api.getTodos();
+    todoList.forEach((Todo element) {
+      element.title;
+    });
+
+    return todoList;
   }
 
-  Future<String> _fetchToDo() async {
-    http.Response response = await http.get(Uri.parse(
-        'https://todoapp-api-pyq5q.ondigitalocean.app/todos?key=503e94e7-1781-463d-bd6a-38522d2a3b55'));
-    var jsonData = response.body;
-    var obj = jsonDecode(jsonData);
-    for (int i = 0; i < obj.length; i++) {
-      var fetchedToDo = obj[i]['title'];
-      return fetchedToDo;
-    }
-    return obj[0]['title'];
+  _futureBuilder() {
+    return FutureBuilder(
+      future: _findToDo(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _listView(todolist: snapshot.data);
+        }
+        return const CircularProgressIndicator();
+      },
+    );
   }
+
+  _listView({required todolist}) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: todolist.isEmpty ? 1 : todolist.length,
+      itemBuilder: (context, index) {
+        if (todolist.isEmpty) {
+          return Container(child: const Text('Funkade sådär'));
+        }
+        print(todolist[index]);
+        return BuildList(filteredTodo: todolist[index]);
+      },
+    );
+  }
+  //TODO: Lägg till future builder och sen listvirew builder
 }

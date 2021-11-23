@@ -1,34 +1,16 @@
-// ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import 'model.dart';
+import 'package:my_first_app/api.dart';
+import 'package:my_first_app/todo_model.dart';
 
 class AddView extends StatefulWidget {
-  final CheckBoxState checkbox;
-
-  AddView(this.checkbox);
-
   @override
-  State<StatefulWidget> createState() {
-    return AddViewState(checkbox);
-  }
+  State<AddView> createState() => _AddViewState();
 }
 
-class AddViewState extends State<AddView> {
+class _AddViewState extends State<AddView> {
   late String title;
 
-  late TextEditingController textEditingController;
-
-  AddViewState(CheckBoxState checkbox) {
-    this.title = checkbox.title;
-
-    textEditingController = TextEditingController(text: checkbox.title);
-
-    textEditingController.addListener(() {
-      setState(() {
-        title = textEditingController.text;
-      });
-    });
-  }
+  late TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +65,7 @@ class AddViewState extends State<AddView> {
           IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                Navigator.pop(context, CheckBoxState(title: title));
+                Navigator.pop(context, textEditingController.text);
               }),
           const Text('ADD',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
