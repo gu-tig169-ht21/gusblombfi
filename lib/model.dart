@@ -13,13 +13,13 @@ class MyState extends ChangeNotifier {
 
   void checkTodo(Todo todo) async {
     todo.done = !todo.done;
-    List<Todo>? newList = await Api.checkTodo(todo, todo.id);
+    /*List<Todo>? newList*/ _list = await Api.checkTodo(todo, todo.id);
     notifyListeners();
   }
 
   void removeTodo(Todo todo) async {
     try {
-      List<Todo>? newList = await Api.deleteTodo(todo.id);
+      /*List<Todo>? newList*/ _list = await Api.deleteTodo(todo.id);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -35,14 +35,4 @@ class MyState extends ChangeNotifier {
     this._filterBy = filterBy;
     notifyListeners();
   }
-}
-
-class TodoState {
-  final String title;
-  bool value;
-
-  TodoState({
-    required this.title,
-    this.value = false,
-  });
 }

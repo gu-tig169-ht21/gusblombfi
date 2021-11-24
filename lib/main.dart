@@ -103,13 +103,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  List<TodoState> _filterList(List<TodoState> list, String filterBy) {
-    List<TodoState> filteredList = [];
+  List<Todo> _filterList(List<Todo> list, String filterBy) {
+    List<Todo> filteredList = [];
     filteredList.clear();
 
     if (filterBy == "Done") {
-      list.forEach((TodoState element) {
-        if (element.value == true) {
+      list.forEach((Todo element) {
+        if (element.done == true) {
           filteredList.add(element);
         }
       });
@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (filterBy == "Undone") {
       for (var element in list) {
-        if (element.value == false) {
+        if (element.done == false) {
           filteredList.add(element);
         }
       }
@@ -136,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (state.list.isEmpty) {
         return _futureBuilder();
       } else {
-        return _listView(todolist: state.list);
+        return _listView(todolist: _filterList(state.list, state.filterBy));
       }
     });
 /*     _futureBuilder(); */
@@ -176,5 +176,4 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
   }
-  //TODO: Lägg till future builder och sen listvirew builder
 }

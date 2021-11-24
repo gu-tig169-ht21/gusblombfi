@@ -24,7 +24,7 @@ class Api {
     }
   }
 
-  static Future<List<Todo>?> deleteTodo(String id) async {
+  static /*Future<List<Todo>?>*/ deleteTodo(String id) async {
     final List<Todo> todoList = [];
     http.Response response = await http.delete(Uri.parse(
         'https://todoapp-api-pyq5q.ondigitalocean.app/todos/$id?key=503e94e7-1781-463d-bd6a-38522d2a3b55'));
@@ -39,7 +39,7 @@ class Api {
     }
   }
 
-  static Future checkTodo(Todo todo, id) async {
+  static /*Future*/ checkTodo(Todo todo, id) async {
     final List<Todo> todoList = [];
 
     var json = todo.toJson();
