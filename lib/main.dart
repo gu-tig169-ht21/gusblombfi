@@ -1,10 +1,15 @@
 // ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
+import 'package:my_first_app/api.dart';
+import 'package:my_first_app/todo_model.dart';
 import 'package:provider/provider.dart';
-import 'addView.dart';
-import 'model.dart';
+import 'add_view.dart';
 import 'buildList.dart';
+import 'model.dart';
+
+// API-Key: 503e94e7-1781-463d-bd6a-38522d2a3b55
+// API-LÄNK: https://todoapp-api-pyq5q.ondigitalocean.app/todos?key=503e94e7-1781-463d-bd6a-38522d2a3b55
 
 void main() {
   runApp(
@@ -25,15 +30,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: const MyHomePage(title: 'TIG169 TODO'),
+      home: const MyHomePage(title: 'TIG169 TODO', todoList: []),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, required this.todoList})
+      : super(key: key);
 
   final String title;
+  final List<Todo> todoList;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -42,6 +49,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    ///Size of the entire screen.
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -66,9 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Consumer<MyState>(
-          builder: (context, state, child) =>
-              BuildList(filterList: _filterList(state.list, state.filterBy))),
+      body: SizedBox(
+        width: size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _content(),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.teal[900],
         child: const Icon(
@@ -77,27 +93,23 @@ class _MyHomePageState extends State<MyHomePage> {
           size: 55,
         ),
         onPressed: () async {
-          var newToDo = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddView(CheckBoxState(
-                        title: '',
-                      ))));
-          if (newToDo != null) {
-            Provider.of<MyState>(context, listen: false).addTodo(newToDo);
+          String? todoTitle = await Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddView()));
+          if (todoTitle != null) {
+            Provider.of<MyState>(context, listen: false).addTodo(todoTitle);
           }
         },
       ),
     );
   }
 
-  List<CheckBoxState> _filterList(List<CheckBoxState> list, String filterBy) {
-    List<CheckBoxState> filteredList = [];
+  List<Todo> _filterList(List<Todo> list, String filterBy) {
+    List<Todo> filteredList = [];
     filteredList.clear();
 
     if (filterBy == "Done") {
-      list.forEach((CheckBoxState element) {
-        if (element.value == true) {
+      list.forEach((Todo element) {
+        if (element.done == true) {
           filteredList.add(element);
         }
       });
@@ -107,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (filterBy == "Undone") {
       for (var element in list) {
-        if (element.value == false) {
+        if (element.done == false) {
           filteredList.add(element);
         }
       }
@@ -117,5 +129,51 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ///If [filterBy] is not 'done' or 'undone' return the entire list unfiltered.
     return list;
+  }
+
+  Widget _content() {
+    return Consumer<MyState>(builder: (context, state, child) {
+      if (state.list.isEmpty) {
+        return _futureBuilder();
+      } else {
+        return _listView(todolist: _filterList(state.list, state.filterBy));
+      }
+    });
+/*     _futureBuilder(); */
+  }
+
+  _findToDo() async {
+    List<Todo> todoList = await Api.getTodos();
+    todoList.forEach((Todo element) {
+      element.title;
+    });
+
+    return todoList;
+  }
+
+  _futureBuilder() {
+    return FutureBuilder(
+      future: _findToDo(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _listView(todolist: snapshot.data);
+        }
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
+  _listView({required todolist}) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: todolist.isEmpty ? 1 : todolist.length,
+      itemBuilder: (context, index) {
+        if (todolist.isEmpty) {
+          return Container(child: const Text('Funkade sådär'));
+        }
+        print(todolist[index]);
+        return BuildList(filteredTodo: todolist[index]);
+      },
+    );
   }
 }

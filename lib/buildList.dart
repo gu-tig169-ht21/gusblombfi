@@ -2,12 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:my_first_app/model.dart';
+import 'package:my_first_app/todo_model.dart';
 import 'package:provider/provider.dart';
 
 class BuildList extends StatefulWidget {
-  final List<CheckBoxState> filterList;
+  final Todo filteredTodo;
 
-  const BuildList({required this.filterList});
+  // ignore: use_key_in_widget_constructors
+  const BuildList({required this.filteredTodo});
 
   @override
   State<BuildList> createState() => _BuildListState();
@@ -16,27 +18,27 @@ class BuildList extends StatefulWidget {
 class _BuildListState extends State<BuildList> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-        children: widget.filterList
-            .map((checkbox) => _buildCheckbox(context, checkbox))
-            .toList());
+    return _buildtodo(context, widget.filteredTodo);
   }
 
-  Widget _buildCheckbox(context, CheckBoxState checkbox) => CheckboxListTile(
-        contentPadding: const EdgeInsets.all(12.0),
-        controlAffinity: ListTileControlAffinity.leading,
-        value: checkbox.value,
-        title: Text(checkbox.title,
-            style: TextStyle(
-                decoration:
-                    checkbox.value ? TextDecoration.lineThrough : null)),
-        secondary: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              Provider.of<MyState>(context, listen: false).removeBox(checkbox);
-            }),
-        onChanged: (value) => setState(
-          () => checkbox.value = value!,
-        ),
-      );
+  Widget _buildtodo(context, Todo todo) => CheckboxListTile(
+      contentPadding: const EdgeInsets.all(12.0),
+      controlAffinity: ListTileControlAffinity.leading,
+      value: todo.done,
+      title: Text(todo.title,
+          style: TextStyle(
+              decoration: todo.done ? TextDecoration.lineThrough : null)),
+      secondary: IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            Provider.of<MyState>(context, listen: false).removeTodo(todo);
+          }),
+      onChanged: (value) {
+        Provider.of<MyState>(context, listen: false).checkTodo(todo);
+      });
+
+  /*  : (value) => setState(
+          () => todo.done = value!,
+        ), ); */
+
 }

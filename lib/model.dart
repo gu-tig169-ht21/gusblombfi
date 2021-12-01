@@ -1,28 +1,33 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:my_first_app/api.dart';
+import 'package:my_first_app/todo_model.dart';
 
 class MyState extends ChangeNotifier {
-  final List<CheckBoxState> _list = [
-    CheckBoxState(title: 'Read a book'),
-    CheckBoxState(title: 'Do homework'),
-    CheckBoxState(title: 'Tidy room'),
-    CheckBoxState(title: 'Have fun'),
-    CheckBoxState(title: 'Meditate'),
-  ];
-
-  List<CheckBoxState> get list => _list;
+  List<Todo> _list = [];
+  List<Todo> get list => _list;
 
   String _filterBy = 'All';
   String get filterBy => _filterBy;
 
-  void removeBox(CheckBoxState checkbox) {
-    _list.remove(checkbox);
+  void checkTodo(Todo todo) async {
+    todo.done = !todo.done;
+    /*List<Todo>? newList*/ _list = await Api.checkTodo(todo, todo.id);
     notifyListeners();
   }
 
-  void addTodo(CheckBoxState checkbox) {
-    _list.add(checkbox);
+  void removeTodo(Todo todo) async {
+    try {
+      /*List<Todo>? newList*/ _list = await Api.deleteTodo(todo.id);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void addTodo(String title) async {
+    _list = await Api.addTodo(title);
     notifyListeners();
   }
 
@@ -30,14 +35,4 @@ class MyState extends ChangeNotifier {
     this._filterBy = filterBy;
     notifyListeners();
   }
-}
-
-class CheckBoxState {
-  final String title;
-  bool value;
-
-  CheckBoxState({
-    required this.title,
-    this.value = false,
-  });
 }
